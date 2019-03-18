@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+    <meta charset="UTF-8">
+    <title>我的导航</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <header></header>
+    <main>
+        <div  id="mainXXX" class="wrapper"></div>
+    </main>
+    <footer></footer>
+    <script>
+        var key = {
+            0: ['q','w','e','r','t','y','u','i','o','p'],
+            1: ['a','s','d','f','g','h','j','k','l'],
+            2 :['z','x','c','v','b','n','m'],
+            length :3
+        }
+        var hash ={
+            q: 'qq.com',
+            w: 'weibo.com',
+            e: 'ele.me',
+            r: 'renren.com',
+            t: 'tianya.cn',
+            y: 'youtube.com',
+            u: 'uc.com',
+            i: 'iqiyi.com',
+            o: 'opera.com',
+            p: undefined,
+        }
+        var hashInLocalStorage = JSON.parse(localStorage.getItem('zzz')|| 'null')
+        //取出localStorage中的zzz对应的hash
+        if(hashInLocalStorage){
+            hash = hashInLocalStorage
+        }
+        index = 0 //生成3个div
+        while (index < key['length']) {
+            div1 = document.createElement('div') //div1函数
+            mainXXX.appendChild(div1) //id="mainXXX"的元素里执行div1函数
+            row = key[index] //第0 1 2行
+            index2 = 0
+            while (index2 < row['length']) { //index2 < 第0 1 2行的长度
+                kbd = document.createElement('kbd') //kdb函数
+                kbd.textContent = row[index2] //在kbd函数的文本内容为row[index2]
+                buttonX = document.createElement('button')
+                buttonX.textContent ='编辑'
+                buttonX.id = row[index2]
+                buttonX.onclick = function(sadas){ //点击button按钮
+                    key = sadas.target.id //key=函数的属性的id
+                    x = prompt('给我一个网址') //用户输入网址
+                    hash[key] = x //打开用户输入的网址
+                    localStorage.setItem('zzz', JSON.stringify(hash)) 
+                    console.log(hash)
+                }
+                kbd.appendChild(buttonX)
+                div1.appendChild(kbd) //在div1里执行kbd函数
+                index2 = index2 + 1
+            }
+            index = index + 1
+        }
+
+        document.onkeypress = function(sdasdb){ //监听键盘
+            key = sdasdb['key'] 
+            website = hash[key]
+            console.log(website)
+            //location.href = 'http://'+website //全局变量，当前地址栏的地址=website
+            window.open('http://'+website, '_blank') //打开窗口，在新窗口打开website
+        }
+    </script>
+</body>
+</html>
