@@ -6,10 +6,6 @@ a{
     text-decoration: none;
 }
 kbd{
-    border: 1px solid red;
-    width: 4em;
-    height: 4em;
-    display: inline-block;
     text-transform: uppercase; /* 把小写字母变成大写字母 */
     position: relative;
 }
@@ -22,15 +18,58 @@ kbd > button {
 kbd:hover > button{
     display: inline-block;
 }
-#mainXXX > div:nth-child(2){
-    margin-left: 0em;
+#mainXXX > div:nth-child(2){ /* 第二行键盘的位置 */
+    margin-left: -22px;
 }
-#mainXXX > div:nth-child(3){
-    margin-left: -2em;
+#mainXXX > div:nth-child(3){ /* 第三行键盘的位置 */
+    margin-left: -80px;
+}
+body{
+    background: url(./img/wall.jpg) center center no-repeat; /* 背景图 */
+    background-size: cover; /* 背景自适应 */
 }
 main{
-    text-align: center;
+    text-align: center; /* 整个键盘水平居中 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
 }
 .wrapper{
     display: inline-block;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+.key{
+    width: 50px;
+    height: 40px;
+    background: linear-gradient(to bottom, #292929 0%,#111111 100%);  /*键盘按键的渐变颜色*/
+    border: 1px solid #373737;
+    border-radius: 6px;
+    color: #c5c5c5;
+    box-shadow: 0 0 0 1px #1B1A1C, 0 0 0 2px #1F2020, 0 3px 0 2px #080808;
+    display: inline-block;
+    font-family: Helvetica;
+    font-size: 16px;
+    position: relative;
+}
+.key .text{
+    position: absolute;
+    left: 4px;
+    top: 2px;
+}
+.key img{
+    position: absolute;
+    left: 4px;
+    bottom: 2px;
+}
+.row{
+    margin: 20px;
+}
+.row .key{
+    margin: 0 10px;
+}
+kbd img {
+    width: 16px;
+    height: 16px;
 }
