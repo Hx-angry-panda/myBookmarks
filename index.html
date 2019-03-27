@@ -12,90 +12,124 @@
     </main>
     <footer></footer>
     <script>
-        var key = {
-            0: ['q','w','e','r','t','y','u','i','o','p'], //键盘第一行
-            1: ['a','s','d','f','g','h','j','k','l'], //键盘第二行
-            2 :['z','x','c','v','b','n','m'], //键盘第三行
-            length :3
-        }
-        var hash ={
-            q: 'qq.com', //键盘 q 对应的网址
-            w: 'weibo.com',
-            e: 'ele.me',
-            r: 'renren.com',
-            t: 'tencent.com',
-            y: 'youku.com',
-            u: 'uc.cn',
-            i: 'iqiyi.com',
-            o: 'opera.com',
-            p: undefined,
-        }
-        var hashInLocalStorage = JSON.parse(localStorage.getItem('zzz')|| 'null')
-        //取出localStorage中的zzz对应的hash
-        if(hashInLocalStorage){
-            hash = hashInLocalStorage
-        }
+        //1.初始化数据
+        var hashA = init()
+        var keys = hashA['keys']
+        var hash = hashA['hash']
 
-        //生成3个div标签
-        index = 0
-        while (index < key['length']) {
-            div1 = document.createElement('div') //div1函数 = 生成标签'div'
-            div1.className = 'row' //div1函数的class名称为 row
-            mainXXX.appendChild(div1) //在id="mainXXX"的标签的子级执行div1函数
+        //2.生成键盘
+        generateKeyboard(keys, hash)
+        
+        //3.监听键盘
+        listenToUser(hash)
 
-            //在div里生成kbd标签
-            //在kbd标签里生成button标签、img标签、span标签 span标签内容为 q w e r ...
-            row = key[index] // row = 第0 1 2行
-            index2 = 0
-            while (index2 < row['length']) { //index2 < 第0 1 2行的长度
-                kbd = document.createElement('kbd') //kdb函数 = 生成标签'kbd'
-                span = document.createElement('span') //span函数 = 生成标签'span'
-                span.className = 'text' //span函数的class名称为 text
-                span.textContent = row[index2] //span函数的文本内容为 q w e r ... 
-                kbd.className = 'key' // kbd函数的class名称为 key
-                img = document.createElement('img') //img函数 = 生成标签'img'
-                if(hash[row[index2]]){ // 意思是键盘的键给了网址，即已经定义
-                //row[index2]意思是键盘第1、2、3行，hash[row[index2]]意思是q w e... a s d ... z x c ...对应的网址
-                    img.src = 'http://'+hash[row[index2]]+'/favicon.ico' //img函数的src属性为该网址的ico
-                }else{ //如果键盘的键未定义
-                    img.src = 'http://i.loli.net/2019/03/25/5c98bf0e36996.png' //img函数的src属性为此网址
-                }
-                img.onerror = function(xxx){ //img函数出现错误（即网址ico获取错误） = 函数xxx
-                    xxx.target.src = 'http://i.loli.net/2019/03/25/5c98bf0e36996.png' //ico获取错误时，img的src属性为此网址
-                }
-                button = document.createElement('button') //button函数 = 生成标签'button'
-                button.textContent ='编辑' //button函数的文本内容为 '编辑'
-                button.id = row[index2] //button函数的id q w e r ... a s d ... z x c ...
-                button.onclick = function(sadas){ //点击button按钮
-                    key = sadas.target.id //key = 函数的target属性的id属性（console.log(key2) 为 q）
-                    button2 = sadas.target //button2 = 函数的target属性 （console.log(button2) 为 <button id="q">编辑</button>）
-                    img2 = button2.previousSibling //img2 = 找到button2的同级元素（即img元素）
-                    console.log(button2.previousSibling)
-                    img2.src = 'http://'+hash[row[index2]]+'/favicon.ico' //点击编辑输入网址确认后img标签的地址为已定义的网址的ico
-                    img2.onerror = function(xxx){ //img标签出错时
-                        xxx.target.src = 'http://i.loli.net/2019/03/25/5c98bf0e36996.png' //img标签的地址更改为此网址
-                    }
-                    x = prompt('给我一个网址') //用户输入网址
-                    hash[key] = x //用户输入的网址替换掉键盘某个键上的网址
-                    localStorage.setItem('zzz', JSON.stringify(hash)) //保证刷新后替换掉的网址不会消失
-                    console.log(hash)
-                }
-                kbd.appendChild(span) //在kbd函数里执行span函数
-                kbd.appendChild(img) //在kbd函数里执行img函数
-                kbd.appendChild(button) //在kbd函数里执行button函数
-                div1.appendChild(kbd) //在div1里执行kbd函数
-                index2 = index2 + 1
+        
+        
+        //工具函数
+        function tag(tagName) {
+            return document.createElement(tagName)
+        }
+        function createSpan(textContent) {
+            var span = tag('span') //span函数 = 生成标签'span'
+            span.className = 'text' //span函数的class名称为 text
+            span.textContent = textContent //span函数的文本内容为 q w e r ... 
+            return span
+        }
+        function createImg(domain) {
+            var img = tag('img') //img函数 = 生成标签'img'
+            if (domain) { // 意思是键盘的键给了网址，即已经定义
+                    //row[index2]意思是键盘第1、2、3行，hash[row[index2]]意思是q w e... a s d ... z x c ...对应的网址
+                img.src = 'http://' + domain + '/favicon.ico' //img函数的src属性为该网址的ico
+            } else { //如果键盘的键未定义
+                img.src = 'http://i.loli.net/2019/03/25/5c98bf0e36996.png' //img函数的src属性为此网址
             }
-            index = index + 1
+            img.onerror = function (xxx) { //img函数出现错误（即网址ico获取错误） = 函数xxx
+                xxx.target.src = 'http://i.loli.net/2019/03/25/5c98bf0e36996.png' //ico获取错误时，img的src属性为此网址
+            }
+            return img
+        }
+        function createButton(id) {
+            var button = tag('button') //button函数 = 生成标签'button'
+            button.textContent = '编辑' //button函数的文本内容为 '编辑'
+            button.id = id //button函数的id q w e r ... a s d ... z x c ...
+            button.onclick = function (sadas) { //点击button按钮
+                var key = sadas.target.id //key = 函数的target属性的id属性（console.log(key2) 为 q）
+                var button2 = sadas.target //button2 = 函数的target属性 （console.log(button2) 为 <button id="q">编辑</button>）
+                var img2 = button2.previousSibling //img2 = 找到button2的同级元素（即img元素）
+                console.log(button2.previousSibling)
+                img2.src = 'http://' + x + '/favicon.ico' //点击编辑输入网址确认后img标签的地址为已定义的网址的ico
+                img2.onerror = function (xxx) { //img标签出错时
+                    xxx.target.src = 'http://i.loli.net/2019/03/25/5c98bf0e36996.png' //img标签的地址更改为此网址
+                }
+                var x = prompt('给我一个网址') //用户输入网址
+                hash[key] = x //用户输入的网址替换掉键盘某个键上的网址
+                localStorage.setItem('zzz', JSON.stringify(hash)) //保证刷新后替换掉的网址不会消失
+                console.log(hash)
+            }
+            return button
         }
 
-        document.onkeypress = function(sdasdb){ //监听键盘（即按下某个键）
-            key = sdasdb['key']  //从console.log(sdasdb) 为 q
-            website = hash[key] //website = qq.com
-            console.log(website) 
-            //location.href = 'http://'+website //全局变量，当前地址栏的地址=website
-            window.open('http://'+website, '_blank') //打开窗口，在新窗口打开website
+        function init() {
+            var keys = {
+                0: ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'], //键盘第一行
+                1: ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'], //键盘第二行
+                2: ['z', 'x', 'c', 'v', 'b', 'n', 'm'], //键盘第三行
+                length: 3
+            }
+            var hash = {
+                q: 'qq.com', //键盘 q 对应的网址
+                w: 'weibo.com',
+                e: 'ele.me',
+                r: 'renren.com',
+                t: 'tencent.com',
+                y: 'youku.com',
+                u: 'uc.cn',
+                i: 'iqiyi.com',
+                o: 'opera.com',
+                p: undefined,
+            }
+            var hashInLocalStorage = JSON.parse(localStorage.getItem('zzz') || 'null') //取出localStorage中的zzz对应的hash
+            if (hashInLocalStorage) {
+                hash = hashInLocalStorage
+            }
+            return {
+                "keys": keys,
+                "hash": hash
+            }
+        }
+
+        function generateKeyboard(keys, hash) {
+            for (var index = 0; index < keys['length']; index = index + 1) { //index < 0 1 2
+                var div = tag('div') //div函数 = 生成标签'div'
+                div.className = 'row' //div函数的class名称为 row
+                mainXXX.appendChild(div) //在id="mainXXX"的标签的子级执行div函数
+
+                //在div里生成kbd标签
+                //在kbd标签里生成button标签、img标签、span标签 span标签内容为 q w e r ...
+                var row = keys[index] // row = 第0 1 2行
+                for (var index2 = 0; index2 < row['length']; index2 = index2 + 1) { //index2 < 第0 1 2行的长度
+                    var span = createSpan(row[index2]) //span函数的文本内容为 q w e r ... 
+                    var img = createImg(hash[row[index2]]) //img函数 = 生成标签'img'
+                    var button = createButton(row[index2])
+                    var kbd = tag('kbd') //kdb函数 = 生成标签'kbd'
+                    kbd.className = 'key' // kbd函数的class名称为 key
+                    kbd.appendChild(span) //在kbd函数里执行span函数
+                    kbd.appendChild(img) //在kbd函数里执行img函数
+                    kbd.appendChild(button) //在kbd函数里执行button函数
+                    div.appendChild(kbd) //在div函数里执行kbd函数
+                }
+            }
+        }
+
+        function listenToUser(hash) {
+            document.onkeypress = function (sdasdb) { //监听键盘（即按下某个键）
+                var key = sdasdb['key']  //从console.log(sdasdb) 为 q
+                var website = hash[key] //website = qq.com
+                console.log(website)
+                //location.href = 'http://'+website //全局变量，当前地址栏的地址=website
+                window.open('http://' + website, '_blank') //打开窗口，在新窗口打开website
+            }
         }
     </script>
-</body>
+</body>    
 </html>
